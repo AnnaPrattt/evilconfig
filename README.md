@@ -9,7 +9,9 @@
 This script can be used after initial exploitation, allowing an attacker to quickly weaken the device to assist in further exploitation, privilege escalation, or lateral movement. Defenders may find value in using this script to test their local security policies or domain group policies. 
 
 ## Requirements
-This script requires a stable internet connection.
+1. This script must be run as administrator.
+2. This script requires a stable internet connection if running the persistence module.
+
 
 ## Features
 The current version of **EvilConfig v1.0** contains these features. Persistence can be optionally added with the `--persist` flag.
@@ -48,6 +50,7 @@ This persistence module is optional and can be run with the `--persist` flag.
 * Add local user (non-privileged)
 * Add local user (privileged)
 * Add local user to RDP group
+* Enable RDP
 
 ## Disclaimer
 
