@@ -29,6 +29,10 @@ Optional flags:
 # persist and log can be run simulataneously
 ```
 
+## Demo
+
+![Video Demo](demo.giff)
+
 ## Features
 The current version of **EvilConfig v1.0** contains these features. 
 
@@ -77,3 +81,4 @@ This tool may break things. This tool should only be executed on devices on whic
 
 * Fix the bug in disabling Windows Event Logging
 * Make the proccess non-interactive
+
