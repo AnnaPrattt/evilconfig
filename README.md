@@ -31,7 +31,7 @@ Optional flags:
 
 ## Demo
 
-![Video Demo](demo.giff)
+![Video Demo](demo.gif)
 
 ## Features
 The current version of **EvilConfig v1.0** contains these features. 
