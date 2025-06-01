@@ -30,8 +30,7 @@ Optional flags:
 ```
 
 ## Demo
-
-![Video Demo](demo.gif)
+See [demo.mp4](demo.mp4)
 
 ## Features
 The current version of **EvilConfig v1.0** contains these features. 
