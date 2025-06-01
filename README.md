@@ -6,15 +6,31 @@
 
 ## Purpose
 
-This script can be used after initial exploitation, allowing an attacker to quickly weaken the device to assist in further exploitation, privilege escalation, or lateral movement. Defenders may find value in using this script to test their local security policies or domain group policies. 
+This script can be used after initial exploitation, allowing an attacker to quickly weaken the device to assist in further exploitation, privilege escalation, or lateral movement. Applying the weaknesses in this script to a victim machine better allows the attacker to re-exploit the machine after losing initial access.
+
+Defenders may find value in using this script to test their local security policies or domain group policies. 
 
 ## Requirements
 1. This script must be run as administrator.
 2. This script requires a stable internet connection if running the persistence module.
 
+## Usage
+
+Basic execution:
+```powershell
+./evilconfig.ps1
+```
+
+Optional flags:
+```
+--help       display help menu in the terminal
+--persist    execute persistence module
+--log        log successful and unsuccessful actions to a local file, configs.txt
+# persist and log can be run simulataneously
+```
 
 ## Features
-The current version of **EvilConfig v1.0** contains these features. Persistence can be optionally added with the `--persist` flag.
+The current version of **EvilConfig v1.0** contains these features. 
 
 ### Defense Evasion
 
@@ -31,14 +47,8 @@ The current version of **EvilConfig v1.0** contains these features. Persistence 
 * Enable local Guest account
 * Disable User Access Control (UAC)
 * Enable Wdigest registry key
-* Disable local password policy
-* Disable local account lockouts
 * Enable SMBv1
 * Disable Windows Updates
-* Disable Secure Boot
-* Disable Smart Screen
-* Disable BitLocker
-* Disable Tamper Protection
 * Set PowerShell execution policy to Unrestricted
 
 
@@ -46,11 +56,17 @@ The current version of **EvilConfig v1.0** contains these features. Persistence 
 This persistence module is optional and can be run with the `--persist` flag.
 
 * Install SSH client
-* Install TeamViewer
 * Add local user (non-privileged)
 * Add local user (privileged)
-* Add local user to RDP group
+* Add new local users to RDP group
 * Enable RDP
+
+### Logging
+This logging module is optional and can be run with the `--log` flag. <br>
+
+This program is suppossed to be as quiet as possible. By default, no logging is printed on your screen terminal. When the `--log` flag is enacted, logging is written to a local file `configs.txt` without writing anything to your terminal screen.
+
+Only the help menu in the `--help` option prints text to your terminal screen.
 
 ## Disclaimer
 
