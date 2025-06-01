@@ -9,12 +9,12 @@ $arg1=$args[1]
 # This string will contain notes of every information performed by the script.
 # The log will only be written to the configs.txt file if the --log flag is set.
 $global:logString = ""
-
+ $outFilePath = "./configs.txt"
 
 
 function defenseEvasion {
 
-   $global:logString = $global:logString + "---------- DEFENSE EVASTION ----------1n"
+   $global:logString = $global:logString + "---------- DEFENSE EVASTION ----------`n"
 
     #Stop Windows Event logging and audit policy logging. Source https://viperone.gitbook.io/pentest-everything/everything/everything-active-directory/defense-evasion/impair-defenses/disable-windows-event-logging
     try {
@@ -87,7 +87,7 @@ function showHelp {
     Write-Output "      - Adds a local user (non-privileged) and adds a local user (privileged). You will be prompted for the user's passwords upon creation."
     Write-Output "      - Adds both of the new users to the local RDP allowed group."
     Write-Output "      - Installs SSH client for remote access."
-    Write-Output "      - Installs TeamViewer for remote access."
+    Write-Output "      - Enables RDP. "
     Write-Output "A stable internet connection is needed for the persistence module."
     Write-Output ""
     Write-Output "--log: Creates a configs.txt in the local directory with a list of configuration changes applied."
@@ -98,7 +98,7 @@ function showHelp {
 
 function persist {
 # Execute the persistence module if the user adds the persistence flag
-    $global:logString = $global:logString + "---------- PERSISTENCE ----------"
+    $global:logString = $global:logString + "---------- PERSISTENCE ----------`n"
 
     #Gather credentials to create a non-privileged local account
     $localUserName  = Read-Host -MaskInput "Enter the local (non-privileged) username: "
@@ -152,9 +152,11 @@ if ($arg0 -eq "--persist" -or $arg1 -eq "--persist" ) {
     persist
 }
 
+Write-Output $global:logString
+
 try {
     if ($arg0 -eq "--log" -or $arg1 -eq "--log" ) {
-        Set-Content -Path "./configs.txt" -Value $global:logString
+        Add-Content -Path $outFilePath -Value $global:logString
     } 
 }
 catch {
