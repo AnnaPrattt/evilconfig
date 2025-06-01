@@ -64,7 +64,7 @@ This persistence module is optional and can be run with the `--persist` flag.
 ### Logging
 This logging module is optional and can be run with the `--log` flag. <br>
 
-This program is suppossed to be as quiet as possible. By default, no logging is printed on your screen terminal. When the `--log` flag is enacted, logging is written to a local file `configs.txt` without writing anything to your terminal screen.
+This program is suppossed to be as quiet as possible. By default, no logging is printed on your screen terminal. When the `--log` flag is enacted, logging is written to a local file `configs.txt` without writing anything to your terminal screen. Logging only prints to your terminal screen if an error ocurred while trying to write to the log file. 
 
 Only the help menu in the `--help` option prints text to your terminal screen.
 

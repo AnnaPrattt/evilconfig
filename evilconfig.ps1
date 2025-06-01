@@ -148,6 +148,11 @@ if ($arg0 -eq "--persist" -or $arg1 -eq "--persist" ) {
     persist
 }
 
-if ($arg0 -eq "--log" -or $arg1 -eq "--log" ) {
-    Set-Content -Path "./configs.txt" -Value $logString
-} 
+try {
+    if ($arg0 -eq "--log" -or $arg1 -eq "--log" ) {
+        Set-Content -Path "./configs.txt" -Value $logString
+    } 
+}
+catch {
+    Write-Output "ERROR: Unable to log."
+}
