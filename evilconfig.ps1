@@ -143,6 +143,7 @@ log -Info ".......... BEGINNING NEW CONFIG ............"
 
 if ($arg0 -eq "--help") {
     showHelp
+    Exit
 }
 
 defenseEvasion
@@ -161,3 +162,5 @@ try {
 catch {
     Write-Output "ERROR: Unable to log."
 }
+
+Exit
