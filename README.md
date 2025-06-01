@@ -34,7 +34,7 @@ The current version of **EvilConfig v1.0** contains these features.
 
 ### Defense Evasion
 
-* Disable Windows Event Logging
+* ~~Disable Windows Event Logging~~ *known bug*
 * Disable Firewall logging
 * Disable Windows Defender
 * Disable Windows Firewall (Public)
@@ -67,8 +67,13 @@ This logging module is optional and can be run with the `--log` flag. <br>
 
 This program is suppossed to be as quiet as possible. By default, no logging is printed on your screen terminal. When the `--log` flag is enacted, logging is written to a local file `configs.txt` without writing anything to your terminal screen. Logging only prints to your terminal screen if an error ocurred while trying to write to the log file. 
 
-Only the help menu in the `--help` option prints text to your terminal screen.
+Only the help menu in the `--help` option prints text to your terminal screen as custom (non-interactive) text.
 
 ## Disclaimer
 
 This tool may break things. This tool should only be executed on devices on which you have authorized permission to perform malicious actions. If using this tool in a contracted offensive engagement, review your scoping agreement and rules-of-engagement for an appropriate service downtime clause before using this tool. 
+
+## Future Work
+
+* Fix the bug in disabling Windows Event Logging
+* Make the proccess non-interactive
