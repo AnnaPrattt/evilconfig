@@ -14,7 +14,7 @@ $logString = ""
 
 function defenseEvasion {
 
-    log -Info "---------- DEFENSE EVASTION ----------"
+   $logString = $logString + "---------- DEFENSE EVASTION ----------"
 
     #Stop Windows Event logging and audit policy logging. Source https://viperone.gitbook.io/pentest-everything/everything/everything-active-directory/defense-evasion/impair-defenses/disable-windows-event-logging
     try {
