@@ -48,6 +48,7 @@ The current version of **EvilConfig v1.0** contains these features.
 * Disable User Access Control (UAC)
 * Enable Wdigest registry key
 * Enable SMBv1
+* Enable Print spooler
 * Disable Windows Updates
 * Set PowerShell execution policy to Unrestricted
 

@@ -65,6 +65,11 @@ function weakeningHost {
     Enable-WindowsOptionalFeature -Online -FeatureName SMB1Protocol
     log -Info "SMBv1 enabled."
 
+    #Enable Print Spooler
+    Start-Service -Name spooler
+    Set-Service -Name spooler -StartupType 'Automatic'
+    log -Info "Print spooler started, enabled on startup."
+
     #Disable Windows Updates
     Set-Service wuauserv -Startup Disabled
     Stop-Service wuauserv -Force
